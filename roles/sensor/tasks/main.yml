@@ -1,0 +1,29 @@
+---
+- name: Install python dependencies
+  become: yes
+  apt: 
+    name: ['python', 'python-pip', 'python-dev', 'python3-dev', 'python3-pip']
+  tags:
+    - dependencies
+- name: Install Adafruit_DHT
+  become: yes
+  pip: name=Adafruit_DHT
+  tags:
+    - dependencies
+- name: Install monitor
+  become: yes
+  copy:
+    src: query_sensor.py
+    dest: /usr/local/bin/query_sensor.py
+    mode: +x
+  tags:
+    - source
+- name: Set cron
+  become: yes
+  cron:
+    name: 'run sensor'
+    minute: '*/30'
+    job: '/usr/bin/python /usr/local/bin/query_sensor.py >> /home/pi/temps.log'
+  tags:
+    - config
+

@@ -1,0 +1,31 @@
+---
+- name: Update apt
+  become: yes
+  apt:
+    update_cache: yes
+    cache_valid_time: 604800
+  tags:
+    - environment
+- name: Install dev dependencies
+  become: yes
+  apt:
+    name: ['vim', 'git']
+  tags:
+    - dependencies
+- name: Update tz
+  become: yes
+  timezone: 
+    name: America/Los_Angeles
+- name: Set hostname
+  become: yes
+  hostname:
+    name: "{{ inventory_hostname }}"
+- name: Update hostname in hosts file
+  become: yes
+  lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.0\.1\.1'
+    line: '127.0.1.1 {{ inventory_hostname }}'
+    owner: root
+    group: root
+    mode: '0644'
